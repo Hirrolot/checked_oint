@@ -1,0 +1,13 @@
+(library
+ (public_name checked_oint)
+ (name checked_oint)
+ (libraries ctypes.foreign)
+ (preprocess
+  (pps ppx_deriving.eq ppx_deriving.show ppx_deriving.ord ppx_enumerate))
+ (instrumentation
+  (backend bisect_ppx))
+ (foreign_stubs
+  (language c)
+  (names support)
+  (extra_deps int128_support.c)
+  (flags -O3)))
