@@ -8,9 +8,10 @@ license: "MIT"
 homepage: "https://github.com/Hirrolot/checked_oint"
 bug-reports: "https://github.com/Hirrolot/checked_oint/issues"
 depends: [
-  "ocaml"
+  "ocaml" {>= "4.13"}
   "dune" {>= "3.14"}
-  "ctypes-foreign"
+  "ctypes"
+  "ctypes-foreign" {>= "0.21.1"}
   "ppx_deriving"
   "ppx_enumerate"
   "bisect_ppx"

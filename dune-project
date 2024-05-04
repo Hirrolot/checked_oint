@@ -19,9 +19,12 @@
  (name checked_oint)
  (synopsis "An OCaml library for checked integer arithmetic")
  (depends
-  ocaml
+  (ocaml
+   (>= 4.13))
   dune
-  ctypes-foreign
+  ctypes
+  (ctypes-foreign
+   (>= 0.21.1))
   ppx_deriving
   ppx_enumerate
   bisect_ppx
