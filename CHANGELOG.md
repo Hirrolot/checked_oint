@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.1.1 - 2024-05-05
+
+### Added
+
+ - `S.ty` for getting a type representation (`int_ty`).
+
+### Fixed
+
+ - Specify required versions of `ocaml` and `ctypes-foreign` in `dune-project`.
+
 ## 0.1.0 - 2024-05-01
 
 ### Added
