@@ -257,6 +257,34 @@ type generic =
   | I128 of i128
 [@@deriving eq, show]
 
+type signedness =
+  | Unsigned
+  | Signed
+[@@deriving eq, show, enumerate]
+
+type bitness =
+  | Bits8
+  | Bits16
+  | Bits32
+  | Bits64
+  | Bits128
+[@@deriving eq, show, enumerate]
+
+type int_ty = signedness * bitness [@@deriving eq, show, enumerate]
+
+let generic_int_ty = function
+  | U8 _ -> Unsigned, Bits8
+  | U16 _ -> Unsigned, Bits16
+  | U32 _ -> Unsigned, Bits32
+  | U64 _ -> Unsigned, Bits64
+  | U128 _ -> Unsigned, Bits128
+  | I8 _ -> Signed, Bits8
+  | I16 _ -> Signed, Bits16
+  | I32 _ -> Signed, Bits32
+  | I64 _ -> Signed, Bits64
+  | I128 _ -> Signed, Bits128
+;;
+
 [@@@coverage on]
 
 module type Basic = sig
@@ -617,6 +645,7 @@ module type S = sig
   type t [@@deriving eq, show, ord]
 
   val bits : int
+  val ty : int_ty
   val zero : t
   val one : t
   val all_ones : t
@@ -663,6 +692,8 @@ let overflow, underflow, div_by_zero = None, None, None
 module Make (S : Basic) : S with type t = S.t = struct
   include S
   open S
+
+  let ty = generic_int_ty (to_generic (of_int_unchecked 0))
 
   let zero, one = of_int_unchecked 0, of_int_unchecked 1
 
@@ -827,25 +858,6 @@ end = struct
   ;;
 end
 
-[@@@coverage off]
-
-type signedness =
-  | Unsigned
-  | Signed
-[@@deriving eq, show, enumerate]
-
-type bitness =
-  | Bits8
-  | Bits16
-  | Bits32
-  | Bits64
-  | Bits128
-[@@deriving eq, show, enumerate]
-
-type int_ty = signedness * bitness [@@deriving eq, show, enumerate]
-
-[@@@coverage on]
-
 module type Singleton = sig
   type t
 
@@ -918,19 +930,5 @@ let pair_exn =
     | I128 x, I128 y -> make (module I128) (x, y)
     | (U8 _ | U16 _ | U32 _ | U64 _ | U128 _ | I8 _ | I16 _ | I32 _ | I64 _ | I128 _), _
       -> invalid_arg "Checked_oint.pair_exn"
-[@@coverage off]
-;;
-
-let generic_int_ty = function
-  | U8 _ -> Unsigned, Bits8
-  | U16 _ -> Unsigned, Bits16
-  | U32 _ -> Unsigned, Bits32
-  | U64 _ -> Unsigned, Bits64
-  | U128 _ -> Unsigned, Bits128
-  | I8 _ -> Signed, Bits8
-  | I16 _ -> Signed, Bits16
-  | I32 _ -> Signed, Bits32
-  | I64 _ -> Signed, Bits64
-  | I128 _ -> Signed, Bits128
 [@@coverage off]
 ;;

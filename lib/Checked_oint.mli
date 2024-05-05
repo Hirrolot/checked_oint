@@ -51,6 +51,27 @@ type generic =
   | I128 of i128
 [@@deriving eq, show]
 
+(** Represents integer signedness. *)
+type signedness =
+  | Unsigned
+  | Signed
+[@@deriving eq, show, enumerate]
+
+(** Represents integer bitness. *)
+type bitness =
+  | Bits8
+  | Bits16
+  | Bits32
+  | Bits64
+  | Bits128
+[@@deriving eq, show, enumerate]
+
+(** Represents an integer type. *)
+type int_ty = signedness * bitness [@@deriving eq, show, enumerate]
+
+(** Determines the type representation of a generic integer. *)
+val generic_int_ty : generic -> int_ty
+
 (** The signature of operations on integers. *)
 module type S = sig
   (** The particular integer type.
@@ -65,6 +86,9 @@ module type S = sig
 
   (** The number of bits of this integer type. *)
   val bits : int
+
+  (** The type representation. *)
+  val ty : int_ty
 
   (** The value of 0. *)
   val zero : t
@@ -247,24 +271,6 @@ module I128 : sig
   val split : t -> u64 * u64
 end
 
-(** Represents integer signedness. *)
-type signedness =
-  | Unsigned
-  | Signed
-[@@deriving eq, show, enumerate]
-
-(** Represents integer bitness. *)
-type bitness =
-  | Bits8
-  | Bits16
-  | Bits32
-  | Bits64
-  | Bits128
-[@@deriving eq, show, enumerate]
-
-(** Represents an integer type. *)
-type int_ty = signedness * bitness [@@deriving eq, show, enumerate]
-
 (** A single integer of an arbitrary type.
 
     This module is useful for typed manipulation of an integer value, which can belong to
@@ -300,6 +306,3 @@ val singleton : generic -> (module Singleton)
 (** Constructs a pair of integers; raises [Invalid_argument] if a provided pair of generic
     integers are not of the same tag. *)
 val pair_exn : generic * generic -> (module Pair)
-
-(** Determines the type representation of a generic integer. *)
-val generic_int_ty : generic -> int_ty
