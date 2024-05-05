@@ -4,7 +4,7 @@
     128. {!S} is the main signature that contains common operations for all integer types;
     specific implementations are named {!module-U8}, {!module-U16}, and so on. *)
 
-(** The exception raised by the {!S.of_string_exn} implementations. *)
+(** The exception raised on underflows/overflows. *)
 exception Out_of_range
 
 (** An unsigned 8-bit integer. *)
@@ -267,9 +267,9 @@ type int_ty = signedness * bitness [@@deriving eq, show, enumerate]
 
 (** A single integer of an arbitrary type.
 
-    This module is useful for typed manipulation of an arbitrary integer. A first-class
-    instance of this module can be obtained by calling {!singleton} with a {!generic}
-    integer. *)
+    This module is useful for typed manipulation of an integer value, which can belong to
+    any integer type. A first-class instance of this module can be obtained by calling
+    {!singleton} with a {!generic} integer. *)
 module type Singleton = sig
   type t
 
