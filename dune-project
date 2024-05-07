@@ -28,4 +28,5 @@
   ppx_deriving
   ppx_enumerate
   bisect_ppx
-  alcotest))
+  (alcotest
+   (>= 1.7.0))))

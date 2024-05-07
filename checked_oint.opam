@@ -15,7 +15,7 @@ depends: [
   "ppx_deriving"
   "ppx_enumerate"
   "bisect_ppx"
-  "alcotest"
+  "alcotest" {>= "1.7.0"}
   "odoc" {with-doc}
 ]
 build: [
