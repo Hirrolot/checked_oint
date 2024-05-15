@@ -108,10 +108,10 @@ module type S = sig
   (** Whether this integer type is signed or not. *)
   val is_signed : bool
 
-  (** Constructs a value out of [int]; raises {!Out_of_range} on overflow/underflow. *)
-  val of_int_exn : int -> t
+  (** Constructs a value out of [int]; returns [None] on overflow/underflow. *)
+  val of_int : int -> t option
 
-  (** Constructs a value out of [string]; raises {!Out_of_range} on overflow/underflow.
+  (** Constructs a value out of [string]; returns [None] on overflow/underflow.
 
       We allow the following classes of non-negative integers:
       - Binary: [0b] ([0B]) followed by a non-empty sequence of binary digits [0] and [1].
@@ -125,8 +125,8 @@ module type S = sig
       A negative integer is described by the [-] character followed by a well-formed
       non-negative integer.
 
-      All other combinations of characters will raise {!Out_of_range}. *)
-  val of_string_exn : string -> t
+      All other combinations of characters will return [None]. *)
+  val of_string : string -> t option
 
   (** Finds a successor; returns [None] on overflow. *)
   val succ : t -> t option
@@ -181,6 +181,12 @@ module type S = sig
 
   (** Finds the maximum integer of two. *)
   val max : t -> t -> t
+
+  (** Same as {!of_int} but raises {!Out_of_range} instead of returning [None]. *)
+  val of_int_exn : int -> t
+
+  (** Same as {!of_string} but raises {!Out_of_range} instead of returning [None]. *)
+  val of_string_exn : string -> t
 
   (** Finds a successor; raises {!Out_of_range} on overflow. *)
   val succ_exn : t -> t

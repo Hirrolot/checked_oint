@@ -305,8 +305,8 @@ module type Basic = sig
   val bit_or : t -> t -> t
   val bit_and : t -> t -> t
   val bit_xor : t -> t -> t
-  val of_int_exn : int -> t
-  val of_string_exn : string -> t
+  val of_int : int -> t option
+  val of_string : string -> t option
   val to_generic : t -> generic
 end
 [@@ocamlformat "module-item-spacing = compact"]
@@ -344,20 +344,20 @@ struct
   let bit_and = wrap_op2 ( land )
   let bit_xor = wrap_op2 ( lxor )
 
-  let of_int_exn x =
+  let of_int x =
       if x < unwrap S.min_int || x > unwrap S.max_int
-      then raise Out_of_range
-      else of_int_unchecked x
+      then None
+      else Some (of_int_unchecked x)
   ;;
 
-  let of_string_exn s =
+  let of_string s =
       let base, s = determine_base s in
       let x_ptr = allocate int 0 in
       let rc = C.scan_int s x_ptr base in
       let n = !@x_ptr in
       if rc != 0 || n < unwrap S.min_int || n > unwrap S.max_int
-      then raise Out_of_range
-      else wrap n
+      then None
+      else Some (wrap n)
   ;;
 end
 [@@ocamlformat "module-item-spacing = compact"]
@@ -421,17 +421,17 @@ module U32_basic : Basic with type t = u32 = struct
   let bit_and = wrap_op2 Int32.logand
   let bit_xor = wrap_op2 Int32.logxor
 
-  let of_int_exn x =
+  let of_int x =
       if x < 0 || Int64.(of_int x > pred (shift_left 1L 32))
-      then raise Out_of_range
-      else of_int_unchecked x
+      then None
+      else Some (of_int_unchecked x)
   ;;
 
-  let of_string_exn s =
+  let of_string s =
       let base, s = determine_base s in
       let x_ptr = allocate int32_t Int32.zero in
       let rc = C.scan_u32 s x_ptr base in
-      if rc != 0 then raise Out_of_range else wrap !@x_ptr
+      if rc != 0 then None else Some (wrap !@x_ptr)
   ;;
 
   let to_generic x = U32 x [@@coverage off]
@@ -460,13 +460,13 @@ module U64_basic : Basic with type t = u64 = struct
   let bit_or = wrap_op2 Int64.logor
   let bit_and = wrap_op2 Int64.logand
   let bit_xor = wrap_op2 Int64.logxor
-  let of_int_exn x = if x < 0 then raise Out_of_range else of_int_unchecked x
+  let of_int x = if x < 0 then None else Some (of_int_unchecked x)
 
-  let of_string_exn s =
+  let of_string s =
       let base, s = determine_base s in
       let x_ptr = allocate int64_t Int64.zero in
       let rc = C.scan_u64 s x_ptr base in
-      if rc != 0 then raise Out_of_range else wrap !@x_ptr
+      if rc != 0 then None else Some (wrap !@x_ptr)
   ;;
 
   let to_generic x = U64 x [@@coverage off]
@@ -491,13 +491,13 @@ module U128_basic : Basic with type t = u128 = struct
   let bit_or = wrap_op2 C.bit_or_u128
   let bit_and = wrap_op2 C.bit_and_u128
   let bit_xor = wrap_op2 C.bit_xor_u128
-  let of_int_exn x = if x < 0 then raise Out_of_range else of_int_unchecked x
+  let of_int x = if x < 0 then None else Some (of_int_unchecked x)
 
-  let of_string_exn s =
+  let of_string s =
       let base, s = determine_base s in
       let x_ptr = addr (make C.u128) in
       let rc = C.scan_u128 s x_ptr base in
-      if rc != 0 then raise Out_of_range else wrap !@x_ptr
+      if rc != 0 then None else Some (wrap !@x_ptr)
   ;;
 
   let to_generic x = U128 x [@@coverage off]
@@ -559,20 +559,20 @@ module I32_basic : Basic with type t = i32 = struct
   let bit_and = wrap_op2 Int32.logand
   let bit_xor = wrap_op2 Int32.logxor
 
-  let of_int_exn x =
+  let of_int x =
       let min_int_as_int64, max_int_as_int64 =
           Int64.of_int32 (unwrap min_int), Int64.of_int32 (unwrap max_int)
       in
       if Int64.of_int x < min_int_as_int64 || Int64.of_int x > max_int_as_int64
-      then raise Out_of_range
-      else of_int_unchecked x
+      then None
+      else Some (of_int_unchecked x)
   ;;
 
-  let of_string_exn s =
+  let of_string s =
       let base, s = determine_base s in
       let x_ptr = allocate int32_t Int32.zero in
       let rc = C.scan_i32 s x_ptr base in
-      if rc != 0 then raise Out_of_range else wrap !@x_ptr
+      if rc != 0 then None else Some (wrap !@x_ptr)
   ;;
 
   let to_generic x = I32 x [@@coverage off]
@@ -597,13 +597,13 @@ module I64_basic : Basic with type t = i64 = struct
   let bit_or = wrap_op2 Int64.logor
   let bit_and = wrap_op2 Int64.logand
   let bit_xor = wrap_op2 Int64.logxor
-  let of_int_exn x = of_int_unchecked x
+  let of_int x = Some (of_int_unchecked x)
 
-  let of_string_exn s =
+  let of_string s =
       let base, s = determine_base s in
       let x_ptr = allocate int64_t Int64.zero in
       let rc = C.scan_i64 s x_ptr base in
-      if rc != 0 then raise Out_of_range else wrap !@x_ptr
+      if rc != 0 then None else Some (wrap !@x_ptr)
   ;;
 
   let to_generic x = I64 x [@@coverage off]
@@ -628,13 +628,13 @@ module I128_basic : Basic with type t = i128 = struct
   let bit_or = wrap_op2 C.bit_or_i128
   let bit_and = wrap_op2 C.bit_and_i128
   let bit_xor = wrap_op2 C.bit_xor_i128
-  let of_int_exn x = of_int_unchecked x
+  let of_int x = Some (of_int_unchecked x)
 
-  let of_string_exn s =
+  let of_string s =
       let base, s = determine_base s in
       let x_ptr = addr (make C.i128) in
       let rc = C.scan_i128 s x_ptr base in
-      if rc != 0 then raise Out_of_range else wrap !@x_ptr
+      if rc != 0 then None else Some (wrap !@x_ptr)
   ;;
 
   let to_generic x = I128 x [@@coverage off]
@@ -652,8 +652,8 @@ module type S = sig
   val min_int : t
   val max_int : t
   val is_signed : bool
-  val of_int_exn : int -> t
-  val of_string_exn : string -> t
+  val of_int : int -> t option
+  val of_string : string -> t option
   val succ : t -> t option
   val pred : t -> t option
   val neg : t -> t option
@@ -671,6 +671,8 @@ module type S = sig
   val shift_right : t -> t -> t option
   val min : t -> t -> t
   val max : t -> t -> t
+  val of_int_exn : int -> t
+  val of_string_exn : string -> t
   val succ_exn : t -> t
   val pred_exn : t -> t
   val neg_exn : t -> t
@@ -790,6 +792,18 @@ module Make (S : Basic) : S with type t = S.t = struct
   let min x y = if compare x y <= 0 then x else y
 
   let max x y = if compare x y >= 0 then x else y
+
+  let of_int_exn x =
+      match of_int x with
+      | Some x -> x
+      | None -> raise Out_of_range
+  ;;
+
+  let of_string_exn s =
+      match of_string s with
+      | Some x -> x
+      | None -> raise Out_of_range
+  ;;
 
   let succ_exn, pred_exn, neg_exn, abs_exn =
       let check f x =
