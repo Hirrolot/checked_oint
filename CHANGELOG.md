@@ -6,6 +6,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.1.2 - 2024-05-15
+
+### Added
+
+ - `S.of_int` and `S.of_string` which return `option` instead of raising an exception.
+
+### Fixed
+
+ - Specify a required version of `alcotest`.
+
 ## 0.1.1 - 2024-05-05
 
 ### Added
