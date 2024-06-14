@@ -645,7 +645,7 @@ module type S = sig
   type t [@@deriving eq, show, ord]
 
   val bits : int
-  val ty : int_ty
+  val int_ty : int_ty
   val zero : t
   val one : t
   val all_ones : t
@@ -695,7 +695,7 @@ module Make (S : Basic) : S with type t = S.t = struct
   include S
   open S
 
-  let ty = generic_int_ty (to_generic (of_int_unchecked 0))
+  let int_ty = generic_int_ty (to_generic (of_int_unchecked 0))
 
   let zero, one = of_int_unchecked 0, of_int_unchecked 1
 

@@ -88,7 +88,7 @@ module type S = sig
   val bits : int
 
   (** The type representation. *)
-  val ty : int_ty
+  val int_ty : int_ty
 
   (** The value of 0. *)
   val zero : t
