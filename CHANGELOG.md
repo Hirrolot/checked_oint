@@ -6,6 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+## 0.2.0 - 2024-06-14
+
 ### Added
 
  - The `is_zero`, `is_one`, `is_all_ones` predicates on `generic` integers.
