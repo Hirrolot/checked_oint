@@ -872,22 +872,6 @@ end = struct
   ;;
 end
 
-module type Singleton = sig
-  type t
-
-  include S with type t := t
-
-  val value : t
-end
-
-module type Pair = sig
-  type t
-
-  include S with type t := t
-
-  val value : t * t
-end
-
 let ops : int_ty -> (module S) = function
   | Unsigned, Bits8 -> (module U8)
   | Unsigned, Bits16 -> (module U16)
@@ -900,6 +884,14 @@ let ops : int_ty -> (module S) = function
   | Signed, Bits64 -> (module I64)
   | Signed, Bits128 -> (module I128)
 ;;
+
+module type Singleton = sig
+  type t
+
+  include S with type t := t
+
+  val value : t
+end
 
 let singleton =
     let make (type a) (module S : S with type t = a) x =
@@ -922,6 +914,14 @@ let singleton =
     | I128 x -> make (module I128) x
 [@@coverage off]
 ;;
+
+module type Pair = sig
+  type t
+
+  include S with type t := t
+
+  val value : t * t
+end
 
 let pair_exn =
     let make (type a) (module S : S with type t = a) (x, y) =

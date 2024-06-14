@@ -277,6 +277,9 @@ module I128 : sig
   val split : t -> u64 * u64
 end
 
+(** Finds an integer implementation based on its type representation. *)
+val ops : int_ty -> (module S)
+
 (** A single integer of an arbitrary type.
 
     This module is useful for typed manipulation of an integer value, which can belong to
@@ -290,6 +293,9 @@ module type Singleton = sig
   val value : t
 end
 
+(** Constructs an integer singleton. *)
+val singleton : generic -> (module Singleton)
+
 (** A pair of integers of an arbitrary type.
 
     This module is useful for typed manipulation of an arbitrary pair of integers,
@@ -302,12 +308,6 @@ module type Pair = sig
 
   val value : t * t
 end
-
-(** Finds an integer implementation based on its type representation. *)
-val ops : int_ty -> (module S)
-
-(** Constructs an integer singleton. *)
-val singleton : generic -> (module Singleton)
 
 (** Constructs a pair of integers; raises [Invalid_argument] if a provided pair of generic
     integers are not of the same tag. *)
