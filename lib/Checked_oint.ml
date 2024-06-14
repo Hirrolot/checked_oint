@@ -885,6 +885,8 @@ let ops : int_ty -> (module S) = function
   | Signed, Bits128 -> (module I128)
 ;;
 
+[@@@coverage off]
+
 module type Singleton = sig
   type t
 
@@ -912,7 +914,21 @@ let singleton =
     | I32 x -> make (module I32) x
     | I64 x -> make (module I64) x
     | I128 x -> make (module I128) x
-[@@coverage off]
+;;
+
+let is_zero x =
+    let (module Singleton) = singleton x in
+    Singleton.(equal value zero)
+;;
+
+let is_one x =
+    let (module Singleton) = singleton x in
+    Singleton.(equal value one)
+;;
+
+let is_all_ones x =
+    let (module Singleton) = singleton x in
+    Singleton.(equal value all_ones)
 ;;
 
 module type Pair = sig
@@ -944,5 +960,6 @@ let pair_exn =
     | I128 x, I128 y -> make (module I128) (x, y)
     | (U8 _ | U16 _ | U32 _ | U64 _ | U128 _ | I8 _ | I16 _ | I32 _ | I64 _ | I128 _), _
       -> invalid_arg "Checked_oint.pair_exn"
-[@@coverage off]
 ;;
+
+[@@@coverage on]

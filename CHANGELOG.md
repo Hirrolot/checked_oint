@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## unreleased
 
+### Added
+
+ - The `is_zero`, `is_one`, `is_all_ones` predicates on `generic` integers.
+
 ### Changed
 
  - Rename `S.ty` to `S.int_ty` (in accordance with `generic_int_ty`).

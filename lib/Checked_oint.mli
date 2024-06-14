@@ -72,6 +72,15 @@ type int_ty = signedness * bitness [@@deriving eq, show, enumerate]
 (** Determines the type representation of a generic integer. *)
 val generic_int_ty : generic -> int_ty
 
+(** [true] if the integer is 0, [false] otherwise. *)
+val is_zero : generic -> bool
+
+(** [true] if the integer is 1, [false] otherwise. *)
+val is_one : generic -> bool
+
+(** [true] if the integer has all bits set to 1, [false] otherwise. *)
+val is_all_ones : generic -> bool
+
 (** The signature of operations on integers. *)
 module type S = sig
   (** The particular integer type.
